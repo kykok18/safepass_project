@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar - SafePass</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/argon2-browser/dist/argon2-bundled.min.js"></script>
+  </head>
+  <body class="auth-page">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <h1>🔐 SafePass</h1>
+          <p>Buat Akun Baru</p>
+        </div>
+
+        <form id="registerForm" class="auth-form">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required placeholder="Pilih username" />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Master Password</label>
+            <input type="password" id="password" name="password" required placeholder="Buat master password" onkeyup="checkPasswordStrength()" />
+            <div id="strengthIndicator" class="password-strength"></div>
+            <div class="password-req">
+              <strong>📋 Kriteria Password:</strong>
+              <ul id="reqList">
+                <li id="reqLength">❌ Minimal 8 karakter</li>
+                <li id="reqLower">❌ Huruf kecil (a-z)</li>
+                <li id="reqUpper">❌ Huruf besar (A-Z)</li>
+                <li id="reqNumber">❌ Angka (0-9)</li>
+                <li id="reqSpecial">❌ Simbol (!@#$%^&*)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Konfirmasi Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Ulangi master password" onkeyup="checkMatch()" />
+            <div id="matchStatus" class="match-status"></div>
+          </div>
+
+          <button type="submit">Daftar</button>
+        </form>
+
+        <div id="message" class="message"></div>
+
+        <div class="auth-footer">
+          <p>Sudah punya akun? <a href="login.html">Login disini</a></p>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/crypto.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+      function checkPasswordStrength() {
+        const password = document.getElementById("password").value;
+        const indicator = document.getElementById("strengthIndicator");
+
+        if (password.length === 0) {
+          indicator.innerHTML = "";
+          updateReq("reqLength", false, "Minimal 8 karakter");
+          updateReq("reqLower", false, "Huruf kecil (a-z)");
+          updateReq("reqUpper", false, "Huruf besar (A-Z)");
+          updateReq("reqNumber", false, "Angka (0-9)");
+          updateReq("reqSpecial", false, "Simbol (!@#$%^&*)");
+          return;
+        }
+
+        const isLongEnough = password.length >= 8;
+        const hasLower = /[a-z]/.test(password);
+        const hasUpper = /[A-Z]/.test(password);
+        const hasNumber = /[0-9]/.test(password);
+        const hasSpecial = /[!@#$%^&*]/.test(password);
+
+        updateReq("reqLength", isLongEnough, "Minimal 8 karakter");
+        updateReq("reqLower", hasLower, "Huruf kecil (a-z)");
+        updateReq("reqUpper", hasUpper, "Huruf besar (A-Z)");
+        updateReq("reqNumber", hasNumber, "Angka (0-9)");
+        updateReq("reqSpecial", hasSpecial, "Simbol (!@#$%^&*)");
+
+        let strength = 0;
+        if (isLongEnough) strength++;
+        if (hasLower && hasUpper) strength++;
+        if (hasNumber) strength++;
+        if (hasSpecial) strength++;
+
+        let barClass = "",
+          textClass = "",
+          textMsg = "";
+
+        if (strength <= 1) {
+          barClass = "weak-bar";
+          textClass = "text-weak";
+          textMsg = "🔴 Lemah";
+        } else if (strength <= 2) {
+          barClass = "weak-bar";
+          textClass = "text-weak";
+          textMsg = "🔴 Lemah";
+        } else if (strength <= 3) {
+          barClass = "medium-bar";
+          textClass = "text-medium";
+          textMsg = "🟡 Sedang";
+        } else {
+          barClass = "strong-bar";
+          textClass = "text-strong";
+          textMsg = "🟢 Kuat";
+        }
+
+        indicator.innerHTML = `
+                <div class="strength-bar ${barClass}"></div>
+                <span class="strength-text ${textClass}">${textMsg}</span>
+            `;
+
+        checkMatch();
+      }
+
+      function updateReq(id, isMet, text) {
+        const element = document.getElementById(id);
+        if (isMet) {
+          element.innerHTML = `✅ ${text}`;
+          element.className = "req-met";
+        } else {
+          element.innerHTML = `❌ ${text}`;
+          element.className = "req-unmet";
+        }
+      }
+
+      function checkMatch() {
+        const password = document.getElementById("password").value;
+        const confirm = document.getElementById("confirmPassword").value;
+        const matchStatus = document.getElementById("matchStatus");
+
+        if (confirm.length === 0) {
+          matchStatus.innerHTML = "";
+        } else if (password === confirm) {
+          matchStatus.innerHTML = '<span class="match-success">✅ Password cocok</span>';
+        } else {
+          matchStatus.innerHTML = '<span class="match-error">❌ Password tidak cocok</span>';
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - SafePass</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/argon2-browser/dist/argon2-bundled.min.js"></script>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <div class="dashboard-card">
+        <div class="dashboard-header">
+          <h1>🔐 SafePass</h1>
+          <div class="user-info">
+            <span>👤 <span id="usernameDisplay"></span></span>
+            <button id="logoutBtn" class="logout-btn">🚪 Logout</button>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <button id="addPasswordBtn" class="add-btn">+ Tambah Password</button>
+          <button id="generatePasswordBtn" class="generate-pwd-btn">🔑 Generate Password</button>
+          <button id="exportVaultBtn" class="export-btn">📤 Export Vault</button>
+          <button id="importVaultBtn" class="import-btn">📥 Import Vault</button>
+        </div>
+
+        <div class="vault-section">
+          <h3>📋 Password Tersimpan</h3>
+          <div id="vaultList" class="vault-list">
+            <p class="empty-message">Belum ada password tersimpan. Klik "Tambah Password" untuk mulai.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Tambah/Edit Password -->
+    <div id="passwordModal" class="modal">
+      <div class="modal-content">
+        <h3 id="modalTitle">Tambah Password Baru</h3>
+        <input type="text" id="serviceName" placeholder="📱 Nama Layanan (contoh: Instagram, Gmail)" />
+        <input type="text" id="usernameEntry" placeholder="👤 Username / Email" />
+        <input type="password" id="passwordEntry" placeholder="🔒 Password" />
+        <textarea id="notes" rows="3" placeholder="📝 Catatan (opsional)"></textarea>
+        <div class="modal-buttons">
+          <button id="saveBtn" class="save-btn">💾 Simpan</button>
+          <button id="cancelBtn" class="cancel-btn">❌ Batal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input file tersembunyi untuk import vault -->
+    <input type="file" id="importFileInput" accept=".sfpass" style="display: none" />
+
+    <script src="js/crypto.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/vault.js?t=<?= time() ?>"></script>
+    <script src="js/password-generator.js"></script>
+
+    <script>
+      // Pastikan semua elemen sudah loaded sebelum menambahkan event listener
+      document.addEventListener("DOMContentLoaded", function () {
+        // Event listener untuk tombol-tombol
+        const addBtn = document.getElementById("addPasswordBtn");
+        const generateBtn = document.getElementById("generatePasswordBtn");
+        const exportBtn = document.getElementById("exportVaultBtn");
+        const importBtn = document.getElementById("importVaultBtn");
+        const saveBtn = document.getElementById("saveBtn");
+        const cancelBtn = document.getElementById("cancelBtn");
+        const importFileInput = document.getElementById("importFileInput");
+
+        // Tombol Tambah Password
+        if (addBtn) {
+          addBtn.addEventListener("click", function () {
+            if (typeof showAddModal === "function") {
+              showAddModal();
+            } else {
+              console.error("showAddModal tidak ditemukan");
+              alert("Error: Fungsi showAddModal tidak tersedia");
+            }
+          });
+        }
+
+        // Tombol Generate Password
+        if (generateBtn) {
+          generateBtn.addEventListener("click", function () {
+            if (typeof showPasswordGenerator === "function") {
+              showPasswordGenerator();
+            } else {
+              console.error("showPasswordGenerator tidak ditemukan");
+              alert("Error: Fungsi showPasswordGenerator tidak tersedia");
+            }
+          });
+        }
+
+        // Tombol Export Vault
+        if (exportBtn) {
+          exportBtn.addEventListener("click", function () {
+            if (typeof exportVault === "function") {
+              exportVault();
+            } else {
+              console.error("exportVault tidak ditemukan");
+              alert("Error: Fungsi exportVault tidak tersedia. Pastikan file vault.js sudah benar.");
+            }
+          });
+        }
+
+        // Tombol Import Vault
+        if (importBtn) {
+          importBtn.addEventListener("click", function () {
+            if (importFileInput) {
+              importFileInput.click();
+            } else {
+              console.error("importFileInput tidak ditemukan");
+              alert("Error: Input file untuk import tidak tersedia");
+            }
+          });
+        }
+
+        // Event listener untuk file input import
+        if (importFileInput) {
+          importFileInput.addEventListener("change", function (event) {
+            if (typeof importVault === "function") {
+              importVault(event);
+            } else {
+              console.error("importVault tidak ditemukan");
+              alert("Error: Fungsi importVault tidak tersedia. Pastikan file vault.js sudah benar.");
+            }
+          });
+        }
+
+        // Tombol Simpan
+        if (saveBtn) {
+          saveBtn.addEventListener("click", function () {
+            if (typeof savePassword === "function") {
+              savePassword();
+            } else {
+              console.error("savePassword tidak ditemukan");
+              alert("Error: Fungsi savePassword tidak tersedia");
+            }
+          });
+        }
+
+        // Tombol Batal
+        if (cancelBtn) {
+          cancelBtn.addEventListener("click", function () {
+            if (typeof closeModal === "function") {
+              closeModal();
+            } else {
+              console.error("closeModal tidak ditemukan");
+              alert("Error: Fungsi closeModal tidak tersedia");
+            }
+          });
+        }
+
+        // Log untuk debugging
+        console.log("Dashboard siap, fungsi tersedia:", {
+          showAddModal: typeof showAddModal === "function",
+          showPasswordGenerator: typeof showPasswordGenerator === "function",
+          exportVault: typeof exportVault === "function",
+          importVault: typeof importVault === "function",
+          savePassword: typeof savePassword === "function",
+          closeModal: typeof closeModal === "function",
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - SafePass</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/argon2-browser/dist/argon2-bundled.min.js"></script>
+  </head>
+  <body class="auth-page">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <h1>🔐 SafePass</h1>
+          <p>Password Manager Aman</p>
+        </div>
+
+        <form id="loginForm" class="auth-form">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required placeholder="Masukkan username" />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Master Password</label>
+            <input type="password" id="password" name="password" required placeholder="Masukkan master password" />
+          </div>
+
+          <button type="submit">Login</button>
+        </form>
+
+        <div id="message" class="message"></div>
+
+        <div class="auth-footer">
+          <p>Belum punya akun? <a href="register.html">Daftar disini</a></p>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/crypto.js"></script>
+    <script src="js/auth.js"></script>
+  </body>
+</html>

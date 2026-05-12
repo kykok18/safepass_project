@@ -1,13 +1,11 @@
 <?php
 $host = 'localhost';
 $user = 'root';
-$pass = '';
-$db = 'safepass';
+$password = '';
+$database = 'safepass';
 
-$conn = new mysqli($host, $user, $pass, $db);
+$conn = new mysqli($host, $user, $password, $database);
 
 if ($conn->connect_error) {
     die(json_encode(['success' => false, 'message' => 'Koneksi gagal: ' . $conn->connect_error]));
 }
-
-$conn->set_charset("utf8mb4");
